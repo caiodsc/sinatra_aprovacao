@@ -46,7 +46,12 @@ end
 class App < Sinatra::Base
 
   get '/' do
-    "Hello world!"
+    redirect request.base_url + '/home'
+  end
+
+  get '/home' do
+    #"Hello world!"
+    erb :home, :layout => :z_index
 
   end
 
