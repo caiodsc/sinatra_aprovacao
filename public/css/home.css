@@ -29,3 +29,15 @@
 .text-center {
     text-align: center;
 }
+
+.chide {
+    display: none;
+}
+
+#show_profile_details div div div:first-child{
+    color: gray;
+}
+
+.card{
+    cursor: pointer;
+}
