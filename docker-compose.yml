@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  products:
+    build: .
+    ports:
+      - "9292:9292"
+    volumes:
+      - '.:/bemolbot'
+    links:
+      - mongodb
+    environment:
+      - RAILS_ENV=production
+      - RACK_ENV=production
+
+  mongodb:
+    image: mongo
