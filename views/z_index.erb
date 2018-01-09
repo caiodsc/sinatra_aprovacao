@@ -9,10 +9,40 @@
   <!-- Compiled and minified JavaScript -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.100.2/js/materialize.min.js"></script>
 
+  <!--Chart JS-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
+
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=0.4">
   <link href="<%= 'css/' + request.path_info[1..-1] + '.css' %>" rel="stylesheet" type="text/css" />
   <!--<link href="<%= 'css/teste.css' %>" rel="stylesheet" type="text/css" />-->
+
+  <script>
+      $( document ).ready(function() {
+          var ctx = document.getElementById('myChart').getContext('2d');
+          var myDoughnutChart = new Chart(ctx, {
+              type: 'doughnut',
+              data: {
+                  datasets: [{
+                      data: [90, 10],
+                      backgroundColor: [
+                      '#36a2eb','#ff6384'
+                      //pattern.draw('diamond', '#cc65fe')
+                      //pattern.draw('triangle', '#ffce56'),
+                    ]
+                  }],
+
+                  // These labels appear in the legend and in the tooltips when hovering different arcs
+                  labels: [
+                      'Red',
+                      'Yellow',
+                      'Blue'
+                  ]
+              },
+              options: {}
+          });
+      });
+  </script>
 </head>
 
 <body>
