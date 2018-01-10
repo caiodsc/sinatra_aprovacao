@@ -35,9 +35,33 @@
 }
 
 #show_profile_details div div div:first-child{
-    color: gray;
+    color: #9e9e9e;
 }
+
 
 .card{
     cursor: pointer;
+}
+
+.font-xs{
+    font-size: 20px;
+}
+
+.font-s{
+    font-size: 25px;
+}
+.font-m{
+    font-size: 30px;
+}
+
+.font-l{
+    font-size: 35px;
+}
+
+.font-xl{
+    font-size: 40px;
+}
+
+#show_profile_details div div div{
+    font-size: 28px;
 }

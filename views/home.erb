@@ -22,10 +22,10 @@
       </h4>
     </div>
   </div>-->
-  <canvas id="myChart" style="max-width: 300px"></canvas>
+
   <div class="row">
     <div class="col s12">
-      <div class="card"  onclick="$('#show_profile_details').toggleClass('chide');">
+      <div class="card hoverable"  onclick="$('#show_profile_details').toggleClass('chide');"><!--.slideToggle(100);-->
         <div class="card-image">
           <img src="https://static-an-petaxxoninformat.netdna-ssl.com/wp-content/uploads/2016/06/albert-einstein-g%C3%AAnio-740x357.jpg">
         </div>
@@ -35,8 +35,8 @@
               <img src="http://fortuneweavers.com/wp-content/uploads/2017/09/Gold-Icon.png" style="width: 60px;">
             </div>
           <div class="col">
-            <span class="card-title">Albert Einstein</span>
-            <p class="grey-text">RG 196149-42 • PF • Dependente</p>
+            <span class="font-xl">Albert Einstein</span>
+            <p class="grey-text font-m">RG 196149-42 • PF • Dependente</p>
           </div>
           </div>
           <div id="show_profile_details" class="chide">
@@ -68,7 +68,32 @@
         </div>
       </div>
     </div>
+
+    <div class="col s12">
+      <div class="card horizontal hoverable">
+        <div class="card-stacked">
+          <table class="centered">
+            <tbody>
+            <tr>
+              <td style="padding-left: 20px; width:35% !important;">
+                <div class="left-align font-l">Saldo disponível</div>
+                <div class="left-align font-xl blue-text">R$ 3.000</div>
+                <div class="left-align font-s">3.000 / 15.000 / 25.000</div>
+              </td>
+              <td style="max-width:30% !important;"><canvas  id="myChart"></canvas></td>
+              <td style="padding-right: 20px; width:35% !important;">
+                <div class="right-align font-l">Limite de crédito</div>
+                <div class="right-align font-xl blue-text">R$ 3.150</div>
+                <div class="right-align font-s">1.288 / 0,00</div>
+              </td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
   </div>
+
   <div class="row">
     <div class="col s12 cards-container">
       <div class="card">
