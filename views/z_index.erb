@@ -12,6 +12,15 @@
   <!--Chart JS-->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.min.js"></script>
 
+  <!--Swiper API-->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.7/css/swiper.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.7/css/swiper.min.css">
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.7/js/swiper.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.7/js/swiper.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.7/js/swiper.esm.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Swiper/4.0.7/js/swiper.esm.bundle.js"></script>
+
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=0.4">
   <link href="<%= 'css/' + request.path_info[1..-1] + '.css' %>" rel="stylesheet" type="text/css" />
@@ -19,6 +28,24 @@
 
   <script>
       $( document ).ready(function() {
+          /*$('.carousel.carousel-slider').carousel({fullWidth: true});
+          $('.indicator-item').each(function (index, el) {
+              el.setAttribute("style", "background-color: grey");
+          });*/
+          var swiper = new Swiper('.swiper-container', {
+              slidesPerView: 1,
+              spaceBetween: 30,
+              loop: true,
+              pagination: {
+                  el: '.swiper-pagination',
+                  clickable: true,
+              },
+              navigation: {
+                  nextEl: '.swiper-button-next',
+                  prevEl: '.swiper-button-prev',
+              },
+          });
+
           var ctx = document.getElementById('myChart').getContext('2d');
           var myDoughnutChart = new Chart(ctx, {
               type: 'doughnut',
