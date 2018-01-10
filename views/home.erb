@@ -25,19 +25,22 @@
 
   <div class="row">
     <div class="col s12">
-      <div class="card hoverable"  onclick="$('#show_profile_details').toggleClass('chide');"><!--.slideToggle(100);-->
+      <div class="card hoverable"><!--.slideToggle(100);-->
         <div class="card-image">
           <img src="images/profile.png">
         </div>
         <div class="card-content">
-          <div class="row">
+          <div class="row" style="position: relative">
             <div class="col">
               <img src="http://fortuneweavers.com/wp-content/uploads/2017/09/Gold-Icon.png" style="width: 60px;">
             </div>
-          <div class="col">
+          <div  onclick="$('#show_profile_details').removeClass('chide'); $('#expand-less-profile').removeClass('chide');" class="col">
             <span class="font-xl">José Abreu Martins</span>
             <p class="grey-text font-m">RG 196149-42 • PF • Dependente</p>
           </div>
+            <div class="col right-align" style="position: absolute; right:0; top:0;">
+              <i onclick="$('#show_profile_details').addClass('chide'); $('#expand-less-profile').addClass('chide');" id="expand-less-profile" class="material-icons blue-grey-text darken-4 medium chide" style="cursor:pointer;">expand_less</i>
+            </div>
           </div>
           <div id="show_profile_details" class="chide">
             <div class="row">
@@ -92,10 +95,17 @@
         </div>
       </div>
     </div>
-    <div class="col s12">
+    <div id="achievements-card" class="col s12">
       <div class="card hoverable">
         <div class="card-stacked">
-        <div class="font-l" style="padding:10px 0 0 20px;">2 Medalhas conquistadas</div>
+          <div class="row" style="padding:10px 20px 0 0;">
+            <div class="col s6">
+              <div class="font-l">2 Medalhas conquistadas</div>
+            </div>
+            <div class="col s6 right-align">
+                <i onclick="$('#achievements-card').toggleClass('chide')" class="material-icons blue-grey-text darken-4 medium" style="cursor:pointer;">expand_less</i>
+            </div>
+          </div>
         </div>
         <div class="swiper-container">
               <div class="swiper-wrapper">
