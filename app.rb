@@ -68,9 +68,9 @@ class App < Sinatra::Base
 
   get '/' do
 
-    p @venv["environment"]
-    return "Teste"
-    #redirect request.base_url + '/home'
+    #p @venv["environment"]
+    #return "Teste"
+    redirect request.base_url + '/home'
   end
 
   get '/home' do
