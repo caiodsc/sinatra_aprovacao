@@ -8,10 +8,21 @@ require 'sinatra'
 require 'mongoid'
 require 'roar/json/hal'
 require 'rack/conneg'
+require 'yaml'
 
 configure do
   Mongoid.load!("config/mongoid.yml", settings.environment)
   set :server, :puma # default to puma for performance
+end
+
+configure :development, :test do
+  require_relative './dev.rb'
+  #@venv = YAML.load(File.read('./config/config.yml'))
+end
+
+configure :production do
+  require_relative './prd.rb'
+  #@venv = YAML.load(File.read('./config/config.yml'))['environment']['prd']
 end
 
 use(Rack::Conneg) { |conneg|
@@ -45,8 +56,21 @@ module ProductRepresenter
 end
 class App < Sinatra::Base
 
+  before do
+    if self.class.development?
+      #@venv = YAML.load(File.read('./config/config.yml'))
+    end
+    if self.class.production?
+      #p "Production"
+    end
+
+  end
+
   get '/' do
-    redirect request.base_url + '/home'
+
+    p @venv["environment"]
+    return "Teste"
+    #redirect request.base_url + '/home'
   end
 
   get '/home' do

@@ -43,19 +43,21 @@
           $('.indicator-item').each(function (index, el) {
               el.setAttribute("style", "background-color: grey");
           });*/
-          var swiper = new Swiper('.swiper-container', {
-              slidesPerView: 1,
-              spaceBetween: 30,
-              loop: true,
-              pagination: {
-                  el: '.swiper-pagination',
-                  clickable: true,
-              },
-              navigation: {
-                  nextEl: '.swiper-button-next',
-                  prevEl: '.swiper-button-prev',
-              },
-          });
+          initSwiper = function() {
+              var swiper = new Swiper('.swiper-container', {
+                  slidesPerView: 1,
+                  spaceBetween: 30,
+                  loop: true,
+                  pagination: {
+                      el: '.swiper-pagination',
+                      clickable: true,
+                  },
+                  navigation: {
+                      nextEl: '.swiper-button-next',
+                      prevEl: '.swiper-button-prev',
+                  },
+              });
+          }
 
           var ctx = document.getElementById('myChart').getContext('2d');
           var myDoughnutChart = new Chart(ctx, {
