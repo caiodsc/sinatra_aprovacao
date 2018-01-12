@@ -26,6 +26,13 @@
         column-count: 3;
     }
 }
+
+/*.cards-container-full {
+    -webkit-column-count: 1;
+    -moz-column-count: 1;
+    column-count: 1;
+}*/
+
 .text-center {
     text-align: center;
 }
