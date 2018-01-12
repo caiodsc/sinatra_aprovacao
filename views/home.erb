@@ -24,12 +24,39 @@
   </div>-->
 
   <div class="row" style="margin:0px !important; padding:0px !important;">
+
+
+    <div class="col s6">
+      <div id="mensagens-card" class="card" style="width:100%">
+        <div class="card-content" style="position: relative">
+          <div class="font-l">Código</div>
+          <div class="font-xl blue-text">0000001</div>
+        </div>
+      </div>
+    </div>
+    <div class="col s6">
+      <div id="mensagens-card" class="card" style="width:100%">
+        <div class="card-content" style="position: relative">
+          <div class="font-l">Valor</div>
+          <div class="font-xl blue-text">R$ 999,00</div>
+        </div>
+      </div>
+    </div>
     <div class="col s12">
-      <div class="card"><!--.slideToggle(100);-->
+      <div id="mensagens-card" class="card" style="width:100%">
+        <div class="card-content" style="position: relative">
+          <div class="font-l">Pagamento</div>
+          <div class="font-xl blue-text">0 + 3 x R$ 333,00</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col s12">
+      <div class="card" onclick="$('#show_profile_details').toggleClass('chide'); $('#expand-less-profile-info').toggleClass('chide'); $('#expand-less-profile').toggleClass('chide');"><!--.slideToggle(100);-->
         <div class="card-image">
           <img src="images/profile.png">
         </div>
-        <div onclick="$('#show_profile_details').removeClass('chide'); $('#expand-less-profile').removeClass('chide');" class="card-content">
+        <div class="card-content">
           <div class="row" style="position: relative">
             <div class="col">
               <img src="http://fortuneweavers.com/wp-content/uploads/2017/09/Gold-Icon.png" style="width: 60px;">
@@ -40,6 +67,7 @@
           </div>
             <div class="col right-align" style="position: absolute; right:0; top:0;">
               <i id="expand-less-profile" class="material-icons blue-grey-text darken-4 medium chide" style="cursor:pointer;">expand_less</i>
+              <i id="expand-less-profile-info" class="material-icons blue-grey-text darken-4 font-xl" style="cursor:pointer; padding: 10px;">info_outline</i>
             </div>
           </div>
           <div id="show_profile_details" class="chide">
@@ -123,6 +151,53 @@
         </div>
           </div>
       </div>
+    <div id="contracts-card" class="col s12 chide">
+      <div class="card">
+        <div class="card-content">
+          <div class="row">
+            <div class="col s10">
+              <div class="font-l">Contratos Ativos</div>
+            </div>
+            <div class="col s2 right-align">
+                <i onclick="$('#contracts-card').addClass('chide'); $('#contratos-ativos-card').addClass('card').removeClass('chide');" class="material-icons blue-grey-text darken-4 medium" style="cursor:pointer;">expand_less</i>
+            </div>
+          </div>
+          <table>
+            <thead>
+            <tr class="font-m">
+              <th>Data</th>
+              <th class="text-center">Valor</th>
+              <th class="right-align">Conceito</th>
+            </tr>
+            </thead>
+
+            <tbody>
+            <tr class="font-m blue-text">
+              <td>05/08/2017</td>
+              <td class="text-center">R$ 155,32</td>
+              <td class="right-align">Ótimo</td>
+            </tr>
+            <tr class="font-m blue-text">
+              <td>29/07/2017</td>
+              <td class="text-center">R$ 894,90</td>
+              <td class="right-align">Ótimo</td>
+            </tr>
+            <tr class="font-m blue-text">
+              <td>05/08/2017</td>
+              <td class="text-center">R$ 199,20</td>
+              <td class="right-align">Bom</td>
+            </tr>
+            <tr class="font-m blue-text">
+              <td>29/07/2017</td>
+              <td class="text-center">R$ 40,00</td>
+              <td class="right-align">Bom</td>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+          </div>
+      </div>
+
     <div class="col s12 cards-container">
 
       <div id="saldo-card" class="card" style="width:100%">
@@ -139,7 +214,7 @@
         </div>
       </div>
       <div id="achievements-card-1" onclick="$('#achievements-card').removeClass('chide'); $('#achievements-card-1').removeClass('card').addClass('chide'); initSwiper();" class="card" style="width:100%">
-        <div class="card-content">
+        <div class="card-content" style="position: relative">
           <div class="font-l">Medalhas</div>
           <table class="centered">
             <tbody>
@@ -155,6 +230,9 @@
             </tr>
             </tbody>
           </table>
+          <div class="col right-align" style="position: absolute; right:0; top:0;">
+            <i id="expand-less-profile-info" class="material-icons blue-grey-text darken-4 font-l" style="cursor:pointer; padding-top: 27px; padding-right: 10px;">info_outline</i>
+          </div>
         </div>
       </div>
       <div id="contratos-liquidados-card" class="card" style="width:100%">
@@ -173,14 +251,10 @@
           <div class="font-xl blue-text">12</div>
         </div>
       </div>
-      <div id="contratos-ativos-card" class="card" style="width:100%">
+      <div id="acordos-card" class="card" style="width:100%">
         <div class="card-content" style="position: relative">
-          <div class="font-l">Contratos ativos</div>
-          <div class="font-xl blue-text">4</div>
-          <div style="position: absolute; bottom: 30px; right:30px;">
-            <div class="font-xs right-align">2 em dia</div>
-            <div class="red-text font-xs right-align">2 em atraso</div>
-          </div>
+          <div class="font-l">Acordos</div>
+          <div class="font-xl blue-text">0</div>
         </div>
       </div>
       <div id="bonus-card" class="card" style="width:100%">
@@ -213,10 +287,17 @@
           <div class="font-xl blue-text">R$400</div>
         </div>
       </div>
-      <div id="acordos-card" class="card" style="width:100%">
+      <div id="contratos-ativos-card" onclick="$('#contracts-card').removeClass('chide'); $('#contratos-ativos-card').removeClass('card').addClass('chide'); initSwiper();" class="card" style="width:100%">
         <div class="card-content" style="position: relative">
-          <div class="font-l">Acordos</div>
-          <div class="font-xl blue-text">0</div>
+          <div class="font-l">Contratos ativos</div>
+          <div class="font-xl blue-text">4</div>
+          <div style="position: absolute; bottom: 30px; right:30px;">
+            <div class="font-xs right-align">2 em dia</div>
+            <div class="red-text font-xs right-align">2 em atraso</div>
+          </div>
+          <div class="col right-align" style="position: absolute; right:0; top:0;">
+            <i id="expand-less-profile-info" class="material-icons blue-grey-text darken-4 font-l" style="cursor:pointer; padding-top: 27px; padding-right: 10px;">info_outline</i>
+          </div>
         </div>
       </div>
       <div id="mensagens-card" class="card" style="width:100%">
