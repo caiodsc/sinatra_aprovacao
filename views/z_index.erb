@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml" xmlns:v-if="http://www.w3.org/1999/xhtml">
 <head>
   <title>BemolBot</title>
 
@@ -31,8 +31,12 @@
   <link href="<%= 'css/' + request.path_info[1..-1] + '2.css' %>" rel="stylesheet" type="text/css" />
   <!--<link href="<%= 'css/teste.css' %>" rel="stylesheet" type="text/css" />-->
 
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+
   <script>
       $( document ).ready(function() {
+
+
           /*
                    $('#expand-less-profile').click(function (e) {
                        e.stopImmediatePropagation();
@@ -98,6 +102,7 @@
 
                   ctx.restore();
                   var fontSize = (height / 70).toFixed(2);
+                  ctx.fillStyle="#212121";
                   ctx.font = fontSize + "em sans-serif";
                   ctx.textBaseline = "bottom";
 
@@ -118,6 +123,26 @@
 </head>
 
 <body>
+
+<div id="app">
+  <p>{{sayHello()}} - <a v-bind:href="link" v-if="hidden" >Google</a></p>
+</div>
+<script>
+  new Vue({
+     el: '#app',
+     data:{
+         title: 'Hello World!',
+         link: 'http://google.com',
+         hidden: true
+     },
+     methods: {
+         sayHello: function () {
+            return this.title;
+         }
+     }
+  });
+</script>
+
 <%= yield %>
 <div class="row" style="margin:0px !important; padding:0px !important; padding-top: 15px !important;">
   <div class="col" style="width: 50%; margin:0px !important; padding:0px !important;"><button style="height: 165px; width: 100%;" class="waves-effect waves-light btn red darken-3 font-xl">Reprovar</button></div>

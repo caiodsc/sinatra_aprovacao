@@ -169,7 +169,7 @@
         <div id="achievements-card" class="col s12 chide">
           <div class="card">
             <div class="card-content">
-              <div onclick="$('#achievements-card').slideToggle(); $('#achievements-card-2').removeClass('chide');" class="row">
+              <div onclick="$('#achievements-card').toggleClass('chide').toggleClass('toggled'); $('#achievements-card-2').removeClass('chide');" class="row">
                 <div class="col s10">
                   <div class="font-l">2 Medalhas conquistadas</div>
                 </div>
@@ -197,7 +197,7 @@
         <div id="contracts-card" class="col s12 chide">
           <div class="card">
             <div class="card-content">
-              <div class="row" onclick="$('#contracts-card').slideToggle(); $('#contratos-ativos-card-2').removeClass('chide');">
+              <div class="row" onclick="$('#contracts-card').toggleClass('chide').toggleClass('toggled'); $('#contratos-ativos-card-2').removeClass('chide');">
                 <div class="col s10">
                   <div class="font-l">Contratos Ativos</div>
                 </div>
@@ -240,7 +240,7 @@
             </div>
           </div>
         </div>
-        <div class="col s6" id="achievements-card-2"><div id="achievements-card-1" onclick="$('#achievements-card').slideToggle(); $('#achievements-card-2').addClass('chide'); initSwiper();" class="card" style="width:100%">
+        <div class="col s6" id="achievements-card-2"><div id="achievements-card-1" onclick="eltoggled = document.getElementsByClassName('toggled'); if(eltoggled.length!=0){eltoggled[0].hidden = true}; $('#achievements-card').toggleClass('chide').toggleClass('toggled'); $('#achievements-card-2').addClass('chide'); initSwiper();" class="card" style="width:100%">
         <div class="card-content" style="position: relative">
           <div class="font-l">Medalhas</div>
           <table class="centered">
@@ -262,7 +262,7 @@
           </div>
         </div>
       </div> </div>
-        <div class="col s6" id="contratos-ativos-card-2"><div id="contratos-ativos-card" onclick="$('#contracts-card').slideToggle(); $('#contratos-ativos-card-2').addClass('chide'); initSwiper();" class="card" style="width:100%">
+        <div class="col s6" id="contratos-ativos-card-2"><div id="contratos-ativos-card" onclick="eltoggled = document.getElementsByClassName('toggled'); if(eltoggled.length!=0){eltoggled[0].hidden = true};$('#contracts-card').toggleClass('chide').toggleClass('toggled'); $('#contratos-ativos-card-2').addClass('chide'); initSwiper();" class="card" style="width:100%">
           <div class="card-content" style="position: relative">
             <div class="font-l">Contratos ativos</div>
             <div class="font-xl blue-text">4</div>
