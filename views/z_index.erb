@@ -47,7 +47,6 @@
                    $('.indicator-item').each(function (index, el) {
                        el.setAttribute("style", "background-color: grey");
                    });*/
-
           initSwiper = function() {
               var swiper = new Swiper('.swiper-container', {
                   slidesPerView: 1,
@@ -123,30 +122,67 @@
 </head>
 
 <body>
-
-<div id="app">
-  <p>{{sayHello()}} - <a v-bind:href="link" v-if="hidden" >Google</a></p>
-</div>
-<script>
-  new Vue({
-     el: '#app',
-     data:{
-         title: 'Hello World!',
-         link: 'http://google.com',
-         hidden: true
-     },
-     methods: {
-         sayHello: function () {
-            return this.title;
-         }
-     }
-  });
-</script>
-
 <%= yield %>
+
 <div class="row" style="margin:0px !important; padding:0px !important; padding-top: 15px !important;">
   <div class="col" style="width: 50%; margin:0px !important; padding:0px !important;"><button style="height: 165px; width: 100%;" class="waves-effect waves-light btn red darken-3 font-xl">Reprovar</button></div>
   <div class="col" style="width: 50%; margin:0px !important; padding:0px !important;"><button style="height: 165px; width: 100%;" class="waves-effect waves-light btn green darken-3 font-xl">Aprovar</button></div>
 </div>
+
+<script>
+    new Vue({
+        el: '#app',
+        data:{
+            title: 'Hello World!',
+            link: 'http://google.com',
+            hidden: true,
+            cards_instance:{
+                saldo: true,
+                bonus: true,
+                vale: true,
+                historico: true,
+                medalhas: true,
+                ativos: true,
+                liquidados: true,
+                recebimentos: true,
+                acordos: true,
+                prestacoes: true
+            },
+            profile_details: false
+        },
+        methods: {
+            sayHello: function () {
+                return this.title;
+            },
+            swap: function (card_name) {
+                for (card in this.cards_instance){
+                    if(card != card_name){
+                        this.cards_instance[card] = true;
+                    }
+                }
+                this.cards_instance[card_name] = !this.cards_instance[card_name];
+                console.log(`Changed ${card_name}!`);
+                //this.cards_details_instance.card_name = !this.cards_details_instance.card_name
+            },
+            initSwiper: function() {
+                setTimeout(function () {
+                    var swiper = new Swiper('.swiper-container', {
+                        slidesPerView: 1,
+                        spaceBetween: 30,
+                        loop: true,
+                        pagination: {
+                            el: '.swiper-pagination',
+                            clickable: true,
+                        },
+                        navigation: {
+                            nextEl: '.swiper-button-next',
+                            prevEl: '.swiper-button-prev',
+                        },
+                    })
+                },100);
+            }
+        }
+    });
+</script>
 </body>
 </html>

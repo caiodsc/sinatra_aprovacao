@@ -11,8 +11,7 @@
 </nav>-->
 
 
-
-<div style="padding-top: 20px;">
+<div id="app" style="padding-top: 20px;" xmlns:v-on="http://www.w3.org/1999/xhtml">
 <!--<div class="container">
   <div class="row">
     <div class="col s12">
@@ -52,7 +51,7 @@
     </div>
 
     <div class="col s12">
-      <div class="card" onclick="$('#show_profile_details').slideToggle('fast'); $('#expand-less-profile-info').toggleClass('chide'); $('#expand-less-profile').toggleClass('chide');"><!--.slideToggle(100);-->
+      <div class="card" @click="profile_details = !profile_details"><!--.slideToggle(100);-->
         <div class="card-image">
           <img src="images/profile.png">
         </div>
@@ -73,11 +72,11 @@
             <p class="grey-text font-m">RG 196149-42 • PF • Dependente</p>
           </div>
             <div class="col right-align" style="position: absolute; right:0; top:0;">
-              <i id="expand-less-profile" class="material-icons blue-text medium chide" style="cursor:pointer;">expand_less</i>
-              <i id="expand-less-profile-info" class="material-icons blue-text font-xl" style="cursor:pointer; padding: 10px;">info_outline</i>
+              <i v-if="profile_details" id="expand-less-profile" class="material-icons blue-text medium" style="cursor:pointer;">expand_less</i>
+              <i v-if="!profile_details" id="expand-less-profile-info" class="material-icons blue-text font-xl" style="cursor:pointer; padding: 10px;">info_outline</i>
             </div>
           </div>
-          <div id="show_profile_details" class="chide">
+          <div v-if="profile_details" id="show_profile_details">
             <div class="row">
               <div class="col left-align" style="width: 33.3%">
                 <div>Nascimento:</div>
@@ -166,10 +165,10 @@
 
     <div class="col s12" style="padding: 0px; !important; margin: 0px !important;">
       <div class="row" style="padding: 0px; !important; margin: 0px !important;">
-        <div id="achievements-card" class="col s12 chide">
+        <div v-if="!cards_instance.medalhas" id="achievements-card" class="col s12">
           <div class="card">
             <div class="card-content">
-              <div onclick="$('#achievements-card').toggleClass('chide').toggleClass('toggled'); $('#achievements-card-2').removeClass('chide');" class="row">
+              <div @click="swap('medalhas')" class="row">
                 <div class="col s10">
                   <div class="font-l">2 Medalhas conquistadas</div>
                 </div>
@@ -194,10 +193,10 @@
             </div>
           </div>
         </div>
-        <div id="contracts-card" class="col s12 chide">
+        <div  v-if="!cards_instance.ativos" id="contracts-card" class="col s12">
           <div class="card">
             <div class="card-content">
-              <div class="row" onclick="$('#contracts-card').toggleClass('chide').toggleClass('toggled'); $('#contratos-ativos-card-2').removeClass('chide');">
+              <div class="row" @click="swap('ativos')">
                 <div class="col s10">
                   <div class="font-l">Contratos Ativos</div>
                 </div>
@@ -240,7 +239,7 @@
             </div>
           </div>
         </div>
-        <div class="col s6" id="achievements-card-2"><div id="achievements-card-1" onclick="eltoggled = document.getElementsByClassName('toggled'); if(eltoggled.length!=0){eltoggled[0].hidden = true}; $('#achievements-card').toggleClass('chide').toggleClass('toggled'); $('#achievements-card-2').addClass('chide'); initSwiper();" class="card" style="width:100%">
+        <div v-if="cards_instance.medalhas" v-on:click="swap('medalhas'); initSwiper();" class="col s6" id="achievements-card-2"><div id="achievements-card-1" class="card" style="width:100%">
         <div class="card-content" style="position: relative">
           <div class="font-l">Medalhas</div>
           <table class="centered">
@@ -262,7 +261,7 @@
           </div>
         </div>
       </div> </div>
-        <div class="col s6" id="contratos-ativos-card-2"><div id="contratos-ativos-card" onclick="eltoggled = document.getElementsByClassName('toggled'); if(eltoggled.length!=0){eltoggled[0].hidden = true};$('#contracts-card').toggleClass('chide').toggleClass('toggled'); $('#contratos-ativos-card-2').addClass('chide'); initSwiper();" class="card" style="width:100%">
+        <div v-if="cards_instance.ativos" v-on:click="swap('ativos')" class="col s6" id="contratos-ativos-card-2"><div id="contratos-ativos-card" class="card" style="width:100%">
           <div class="card-content" style="position: relative">
             <div class="font-l">Contratos ativos</div>
             <div class="font-xl blue-text">4</div>
