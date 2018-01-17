@@ -5,7 +5,7 @@ gem 'sinatra'
 gem 'puma'
 gem 'rack-conneg'
 gem 'rake'
-
+gem 'dotenv'
 
 # Mongo + Mongoid
 gem 'mongo', '~> 2.1'
@@ -18,3 +18,4 @@ gem 'multi_json'
 
 #SASS
 #gem 'css'
+

@@ -1,1 +1,0 @@
-VAR1 = "Variável de Produção"

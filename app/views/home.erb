@@ -24,7 +24,8 @@
 
   <div class="row" style="margin:0px !important; padding:0px !important;">
 
-
+<div class="col s12 m12 l12 xl5">
+  <div class="row" style="margin:0px !important; padding:0px !important;">
     <div class="col s6">
       <div id="mensagens-card" class="card" style="width:100%">
         <div class="card-content" style="position: relative">
@@ -72,8 +73,8 @@
             <p class="grey-text font-m">RG 196149-42 • PF • Dependente</p>
           </div>
             <div class="col right-align" style="position: absolute; right:0; top:0;">
-              <i v-if="profile_details" id="expand-less-profile" class="material-icons blue-text medium" style="cursor:pointer;">expand_less</i>
-              <i v-if="!profile_details" id="expand-less-profile-info" class="material-icons blue-text font-xl" style="cursor:pointer; padding: 10px;">info_outline</i>
+              <i v-if="profile_details" id="expand-less-profile" class="material-icons blue-text medium">expand_less</i>
+              <i v-if="!profile_details" id="expand-less-profile-info" class="material-icons blue-text font-xl" style="padding: 10px;">info_outline</i>
             </div>
           </div>
           <div v-if="profile_details" id="show_profile_details">
@@ -105,7 +106,10 @@
         </div>
       </div>
     </div>
-
+  </div>
+</div>
+<div class="col s12 m12 l12 xl7">
+  <div class="row">
     <div class="col s12">
       <div class="card horizontal">
         <div class="card-stacked">
@@ -129,10 +133,6 @@
         </div>
       </div>
     </div>
-
-    <!--HAHAHAHAHAHAHAHAAHAHAHAHAHAH-->
-
-
     <div class="col s12 cards-container">
       <div id="saldo-card" class="card" style="width:100%">
         <div class="card-content">
@@ -162,7 +162,6 @@
         </div>
       </div>
     </div>
-
     <div class="col s12" style="padding: 0px; !important; margin: 0px !important;">
       <div class="row" style="padding: 0px; !important; margin: 0px !important;">
         <div v-if="!cards_instance.medalhas" id="achievements-card" class="col s12">
@@ -257,7 +256,7 @@
             </tbody>
           </table>
           <div class="col right-align" style="position: absolute; right:0; top:0;">
-            <i id="expand-less-profile-info" class="material-icons blue-text font-l" style="cursor:pointer; padding-top: 27px; padding-right: 10px;">info_outline</i>
+            <i id="expand-less-profile-info" class="material-icons blue-text font-l" style="padding-top: 27px; padding-right: 10px;">info_outline</i>
           </div>
         </div>
       </div> </div>
@@ -270,7 +269,7 @@
               <div class="red-text font-xs right-align">2 em atraso</div>
             </div>
             <div class="col right-align" style="position: absolute; right:0; top:0;">
-              <i id="expand-less-profile-info" class="material-icons blue-text font-l" style="cursor:pointer; padding-top: 27px; padding-right: 10px;">info_outline</i>
+              <i id="expand-less-profile-info" class="material-icons blue-text font-l" style=" padding-top: 27px; padding-right: 10px;">info_outline</i>
             </div>
           </div>
         </div> </div>
@@ -321,6 +320,7 @@
 
 
       </div>
+  </div></div>
   </div>
-</div>
+  </div>
 </div>

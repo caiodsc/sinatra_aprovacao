@@ -10,72 +10,31 @@ require 'roar/json/hal'
 require 'rack/conneg'
 require 'yaml'
 
-configure do
-  Mongoid.load!("config/mongoid.yml", settings.environment)
-  set :server, :puma # default to puma for performance
-end
+require 'dotenv'
 
-configure :development, :test do
-  require_relative './dev.rb'
-  #@venv = YAML.load(File.read('./config/config.yml'))
-end
 
-configure :production do
-  require_relative './prd.rb'
-  #@venv = YAML.load(File.read('./config/config.yml'))['environment']['prd']
-end
+Dir["./app/models/*.rb"].each {|file| require file }
+Dir["./app/representers/*.rb"].each {|file| require file }
 
-use(Rack::Conneg) { |conneg|
-  conneg.set :accept_all_extensions, false
-  conneg.set :fallback, :json
-  conneg.provide([:json])
-}
 
-before do
-  if negotiated?
-    content_type negotiated_type
-  end
-end
 
-class Product
-  include Mongoid::Document
-  include Mongoid::Timestamps
-  
-  field :name, type: String
-end
-
-module ProductRepresenter
-  include Roar::JSON::HAL
-  
-  property :name
-  property :created_at, :writeable=>false
-
-  link :self do
-    "/products/#{id}"
-  end
-end
 class App < Sinatra::Base
 
-  before do
-    if self.class.development?
-      #@venv = YAML.load(File.read('./config/config.yml'))
-    end
-    if self.class.production?
-      #p "Production"
-    end
-
+  configure do
+    set :views, "./app/views" # Specifying views directory
+    set :public_folder, "./app/public"  # specifying stylesheets directory
   end
 
   get '/' do
-
     #p @venv["environment"]
     #return "Teste"
     redirect request.base_url + '/home'
   end
 
   get '/home' do
+    p ENV["S3_BUCKET"]
     #"Hello world!"
-    erb :home, :layout => :z_index
+    erb :home, :layout => :index
 
   end
 
@@ -120,4 +79,17 @@ class App < Sinatra::Base
       [500, {:message=>"Failed to save product"}.to_json]
     end
   end
+end
+
+configure :development, :test do
+  Dotenv.load('variables.env.development')
+end
+
+configure :production do
+  Dotenv.load('variables.env.production')
+end
+
+configure do
+  Mongoid.load!("config/mongoid.yml", settings.environment)
+  set :server, :puma # default to puma for performance
 end
