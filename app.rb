@@ -63,8 +63,11 @@ class App < Sinatra::Base
     if self.class.production?
       #p "Production"
     end
-
   end
+
+  # Specifying views and stylesheet directories
+  set :views, "./app/views"
+  set :public_folder, "./app/public"
 
   get '/' do
 

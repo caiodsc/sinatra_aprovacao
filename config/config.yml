@@ -1,8 +1,0 @@
-environment:
-    dev:
-        valor: desenvolvimento
-        ip: 1.1.1.1
-
-    prd:
-        valor: producao
-        ip: 2.2.2.2
