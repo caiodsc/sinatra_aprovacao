@@ -82,11 +82,11 @@ class App < Sinatra::Base
 end
 
 configure :development, :test do
-  Dotenv.load('variables.env.development')
+  Dotenv.load('./config/variables.env.development')
 end
 
 configure :production do
-  Dotenv.load('variables.env.production')
+  Dotenv.load('./config/variables.env.production')
 end
 
 configure do

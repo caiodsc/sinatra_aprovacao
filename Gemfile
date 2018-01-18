@@ -19,3 +19,6 @@ gem 'multi_json'
 #SASS
 #gem 'css'
 
+# HTTP Requests
+gem 'rest-client'
+
