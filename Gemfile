@@ -22,3 +22,6 @@ gem 'multi_json'
 # HTTP Requests
 gem 'rest-client'
 
+# Pretty Print
+gem 'awesome_print'
+

@@ -8,6 +8,7 @@ GEM
       i18n (~> 0.7)
       minitest (~> 5.1)
       tzinfo (~> 1.1)
+    awesome_print (1.8.0)
     bson (4.2.2)
     bson_ext (1.5.1)
     concurrent-ruby (1.0.5)
@@ -44,6 +45,10 @@ GEM
       declarative (< 0.1.0)
       declarative-option (< 0.2.0)
       uber (< 0.2.0)
+    rest-client (2.0.2)
+      http-cookie (>= 1.0.2, < 2.0)
+      mime-types (>= 1.16, < 4.0)
+      netrc (~> 0.8)
     rest-client (2.0.2-x86-mingw32)
       ffi (~> 1.9)
       http-cookie (>= 1.0.2, < 2.0)
@@ -63,6 +68,7 @@ GEM
     uber (0.1.0)
     unf (0.1.4)
       unf_ext
+    unf_ext (0.0.7.4)
     unf_ext (0.0.7.4-x86-mingw32)
 
 PLATFORMS
@@ -70,6 +76,7 @@ PLATFORMS
   x86-mingw32
 
 DEPENDENCIES
+  awesome_print
   bson_ext
   dotenv
   mongo (~> 2.1)
