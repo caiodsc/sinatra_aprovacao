@@ -148,6 +148,9 @@ cliente = {}
 #p r
 #p SapService.get_info_pedra_cliente(r)
 #
-p JSON.parse(SapService.get_cliente_json(2410071 ).to_json).to_s.gsub("=>", ":")
+#p JSON.parse(SapService.get_cliente_json(2410071 ).to_json).to_s.gsub("=>", ":")
+#
+
+p SapService.get_medalhas_cliente(1020010)
 
 

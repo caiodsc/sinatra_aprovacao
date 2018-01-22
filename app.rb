@@ -15,6 +15,7 @@ require 'dotenv'
 
 Dir["./app/models/*.rb"].each {|file| require file }
 Dir["./app/representers/*.rb"].each {|file| require file }
+Dir["./app/services/*.rb"].each {|file| require file }
 
 
 
@@ -29,6 +30,16 @@ class App < Sinatra::Base
     #p @venv["environment"]
     #return "Teste"
     redirect request.base_url + '/home'
+  end
+
+  get '/client' do
+    info = SapService.get_cliente_json(2410071 )
+    client = Client.new(:info => info)
+    if client.save
+      [201, client.extend(ClientRepresenter).to_json]
+    else
+      [500, {:message=>"Failed to create client!"}.to_json]
+    end
   end
 
   get '/home' do
