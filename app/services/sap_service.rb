@@ -33,9 +33,9 @@ class SapService
     RestClient.post "http://#{ENV["AUTH"]}@#{ENV["SAP_URL"]}" + resource, data
   end
 
-  def self.get_client_with_photo
+  def self.get_client_with_photo(id)
     data = {
-        :zparam => "14826",
+        :zparam => id,
         :tipo => '0'
     }.to_json
     cliente = {}
@@ -44,6 +44,7 @@ class SapService
       raise "Não houve resultados." if result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].nil?
 
       titular = result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].first
+      cliente["TITULAR"] = titular
 
       ["ATRASADO_CLI", "ATRASADO_DEP", "ATRASADO_AVA", "ATRASADO_DIAS", "MAIOR_ATRASO"].each do |k|
         cliente[k] = result["ZRFC_GET_CLIENTECOMFOTO"][k]
@@ -70,9 +71,9 @@ class SapService
     return cliente
   end
 
-  def self.get_saldo_vc
+  def self.get_saldo_vc(id)
     data = {
-        :i_cliente => "%010d" % 1020010
+        :i_cliente => "%010d" % id
     }.to_json
     cliente = {}
     sap("ZGET_SALDO_VC", data).tap do |response|
@@ -82,9 +83,9 @@ class SapService
     return cliente
   end
 
-  def self.get_medalhas_cliente
+  def self.get_medalhas_cliente(id)
     data = {
-        :i_kunnr => "%010d" % 1020010,
+        :i_kunnr => "%010d" % id,
         :i_ano => Time.now.strftime('%Y')
     }.to_json
     cliente = {}
@@ -95,37 +96,58 @@ class SapService
     return cliente
   end
 
-  def self.get_info_pedra_cliente(cliente)
-    p cliente
+  def self.get_info_pedra_cliente(id)
+    cliente = get_client_with_photo(id)
+    info_pedra = nil
     sap("ZNIVEL_CLIENTE").tap do |response|
       result = JSON.parse(response.body)
-      p result
       cliente["PTS_PX_PEDRA"] = if ['DIAMANTE', 'DIAMANTE+', ''].include?(cliente["PEDRA"])
-                                  p 0
+                                  info_pedra = 0
                                 else
                                   pedra = result["ZNIVEL_CLIENTE"]["T_NIVEL_CLI"]
                                   i_pedra = pedra.index {|p| p["DESCRICAO_NIVEL"] == cliente["PEDRA"]}
                                   min_pts = pedra[i_pedra+1]["PONTOS_MINIMOS"]
-                                  p [min_pts.to_i - cliente["HISTORICO"].to_i ,0].max
+                                  info_pedra = [min_pts.to_i - cliente["HISTORICO"].to_i ,0].max
                                 end
-
     end
+    return info_pedra
   end
 
+  def self.get_info_cliente_new(id)
+    data = {
+        :I_CODCLI => "%010d" % id,
+    }.to_json
+    dados_cliente = nil
+    sap("ZGETCLI_NIVEL01", data).tap do |response|
+      dados_cliente = JSON.parse(response.body)
+    end
+    return dados_cliente
+  end
 
+  def self.get_cliente_json(id)
+    cliente = {}
+    cliente["CLIENTE_COM_FOTO"] = get_client_with_photo(id)
+    cliente["SALDO_VC"] = get_saldo_vc(id)
+    cliente["MEDALHAS_CLIENTE"] = get_medalhas_cliente(id)
+    cliente["PTS_PROX_NIVEL"] = get_info_pedra_cliente(id)
+    cliente["INFO_PEDRA"] = get_info_cliente_new(id)
+    return cliente
+  end
+
+end
+
+
+cliente = {}
 #c = s.sap_get('pvmovel/clientes/1020010')
 #d = s.sap("ZRFC_GET_CLIENTECOMFOTO", {:zparam => "1020010", :tipo => '0'}.to_json)
 #d = s.sap("ZGET_SALDO_VC", {:i_cliente => "%010d" % 1020010}.to_json)
 #d = s.sap("ZMED_CLIENTES", {:i_kunnr => "%010d" % 1020010, :i_ano => Time.now.strftime('%Y')}.to_json)
 #d = s.sap("ZMED_CLIENTES", {:i_kunnr => "%010d" % 1020010, :i_ano => Time.now.strftime('%Y')}.to_json)
 #p JSON.parse(d)
+#r = SapService.get_client_with_photo
+#p r
+#p SapService.get_info_pedra_cliente(r)
 #
+p JSON.parse(SapService.get_cliente_json(2410071 ).to_json).to_s.gsub("=>", ":")
 
 
-end
-
-
-cliente = {}
-
-r = SapService.get_client_with_photo
-p SapService.get_info_pedra_cliente(r)
