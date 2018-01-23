@@ -25,3 +25,7 @@ gem 'rest-client'
 # Pretty Print
 gem 'awesome_print'
 
+gem 'string_utf8'
+
+
+gem 'faraday'

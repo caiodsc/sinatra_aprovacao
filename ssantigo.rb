@@ -94,7 +94,7 @@ class SapService
       cliente["MEDALHAS"] = result["ZMED_CLIENTES"]["T_MED_CLIENTES"]
       cliente["MEDALHAS"].each do |medalha|
         medalha.each do |k, v|
-           medalha[k] = medalha[k].gsub("\u251C\u00AC","ê").gsub("\u252C\u00AC", "ª").gsub("\u251C\u00AE", "é").gsub("\u251C\u00BA\u251C\u00FAo", "ção").gsub("\u251C\u2551", "ú")
+          medalha[k] = medalha[k].gsub("\u251C\u00AC","ê").gsub("\u252C\u00AC", "ª").gsub("\u251C\u00AE", "é").gsub("\u251C\u00BA\u251C\u00FAo", "ção").gsub("\u251C\u2551", "ú")
         end
       end
     end
