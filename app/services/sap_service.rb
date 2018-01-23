@@ -1,7 +1,9 @@
 require 'rest-client'
 require 'json'
 require 'dotenv'
-require "awesome_print"
+require 'awesome_print'
+require_relative 'serialize_service'
+
 Dotenv.load('../../config/variables.env.development')
 
 
@@ -30,7 +32,7 @@ class SapService
   end
 
   def self.sap(resource, data = {}.to_json)
-    response =  RestClient.post "http://#{ENV["AUTH"]}@#{ENV["SAP_URL"]}" + resource, data, headers = {"charset" => "windows-1252"}
+    response =  RestClient.post "http://#{ENV["AUTH"]}@#{ENV["SAP_URL"]}" + resource, data #, headers = {"charset" => "windows-1252"}
     return JSON.parse(response.body)
   end
 
@@ -39,7 +41,7 @@ class SapService
         :zparam => id,
         :tipo => '0'
     }.to_json
-    cliente = {}
+    dados_cliente = {}
     sap("ZRFC_GET_CLIENTECOMFOTO", data).tap do |result|
       raise "Não houve resultados." if result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].nil?
 
@@ -47,33 +49,33 @@ class SapService
 
       # e bloqueios???
       ["LIMCRED", "SALDODISP", "SALDO", "HISTORICO", "APRAZO", "PEDRA", "PREMIO_DISP", "BONUS_VALIDADE", "BONUS_EXPIRANDO", "NAME1", "STCD1", "STCD2", "STCD3", "STKZN", "TITULAR", "DATLT"].each do |k|
-        cliente[k] = titular[k]
+        dados_cliente[k] = titular[k]
       end
 
       # Foto do titular (PJ dependente)
       if true
         ["OBJ_ATU", "OBJ_IDE"].each do |img|
           next unless result["ZRFC_GET_CLIENTECOMFOTO"].has_key?(img)
-          foto = ''
+          foto = 'data:image/png;base64, '
           result["ZRFC_GET_CLIENTECOMFOTO"][img].each do |parte|
             foto << parte["LINE"]
           end
-          cliente[img] = foto
+          dados_cliente[img] = foto
         end
       end
     end
-    return cliente.sort.to_h
+    return dados_cliente.sort.to_h
   end
 
   def self.get_saldo_vc(id)
     data = {
         :i_cliente => "%010d" % id
     }.to_json
-    cliente = {}
+    dados_cliente = {}
     sap("ZGET_SALDO_VC", data).tap do |result|
-      cliente["SALDO_VC"] = result["ZGET_SALDO_VC"]["E_SALDO"]
+      dados_cliente["SALDO_VC"] = result["ZGET_SALDO_VC"]["E_SALDO"]
     end
-    return cliente
+    return dados_cliente
   end
 
   def self.get_medalhas_cliente(id)
@@ -81,29 +83,29 @@ class SapService
         :i_kunnr => "%010d" % id,
         :i_ano => Time.now.strftime('%Y')
     }.to_json
-    cliente = {}
+    dados_cliente = {}
     sap("ZMED_CLIENTES", data).tap do |result|
-      cliente["MEDALHAS"] = result["ZMED_CLIENTES"]["T_MED_CLIENTES"]
-      cliente["MEDALHAS"].each do |medalha|
+      dados_cliente["MEDALHAS"] = result["ZMED_CLIENTES"]["T_MED_CLIENTES"]
+      dados_cliente["MEDALHAS"].each do |medalha|
         medalha.each do |k, v|
            medalha[k] = medalha[k].gsub("\u251C\u00AC","ê").gsub("\u252C\u00AC", "ª").gsub("\u251C\u00AE", "é").gsub("\u251C\u00BA\u251C\u00FAo", "ção").gsub("\u251C\u2551", "ú")
         end
       end
     end
-    return cliente
+    return dados_cliente
   end
 
   def self.get_info_pedra_cliente(id)
-    cliente = get_cliente_com_foto(id)
+    dados_cliente = get_cliente_com_foto(id)
     info_pedra = nil
     sap("ZNIVEL_CLIENTE").tap do |result|
-      cliente["PTS_PX_PEDRA"] = if ['DIAMANTE', 'DIAMANTE+', ''].include?(cliente["PEDRA"])
+      dados_cliente["PTS_PX_PEDRA"] = if ['DIAMANTE', 'DIAMANTE+', ''].include?(dados_cliente["PEDRA"])
                                   info_pedra = 0
                                 else
                                   pedra = result["ZNIVEL_CLIENTE"]["T_NIVEL_CLI"]
-                                  i_pedra = pedra.index {|p| p["DESCRICAO_NIVEL"] == cliente["PEDRA"]}
+                                  i_pedra = pedra.index {|p| p["DESCRICAO_NIVEL"] == dados_cliente["PEDRA"]}
                                   min_pts = pedra[i_pedra+1]["PONTOS_MINIMOS"]
-                                  info_pedra = [min_pts.to_i - cliente["HISTORICO"].to_i ,0].max
+                                  info_pedra = [min_pts.to_i - dados_cliente["HISTORICO"].to_i ,0].max
                                 end
     end
     return info_pedra
@@ -113,11 +115,35 @@ class SapService
     data = {
         :I_CLIENTE => "%010d" % id
     }.to_json
-    cliente = {}
+    dados_cliente = {}
     sap("ZRFC_GETCLIENTE_COMUNICACAO", data).tap do |result|
-      cliente["CLIENTE_COMUNICACAO"] = result
+      cliente_comunicacao = result["ZRFC_GETCLIENTE_COMUNICACAO"]
+      dados_cliente["EMAIL"] = SerializeService.serialize_email(cliente_comunicacao["EMAILS"])
+      dados_cliente["TELEFONES"] = SerializeService.serialize_telefones(cliente_comunicacao["TELEFONES"])
     end
-    return cliente
+    return dados_cliente
+  end
+
+  def self.get_cliente_neurotech(id)
+    data = {
+        :I_CLIENTE => "%010d" % id
+    }.to_json
+    dados_cliente = {}
+    sap("ZNT_GET_SCORE", data).tap do |result|
+      dados_neurotech = result["ZNT_GET_SCORE"]
+      dados_cliente[""]
+    end
+  end
+
+  def self.get_cliente_idf(id)
+    data = {
+        :I_CLIENTE => "%010d" % id
+    }.to_json
+    dados_cliente = {}
+    sap("ZRFC_IDFCALCULOVENDAPRAZO", data).tap do |result|
+      dados_cliente["TOTAL_PONTUACAO"] = result["ZRFC_IDFCALCULOVENDAPRAZO"]["TOTAL_PONTUACAO"]
+    end
+    return dados_cliente
   end
 
   def self.get_info_cliente_new(id)
@@ -132,19 +158,17 @@ class SapService
   end
 
   def self.get_cliente_json(id)
-    cliente = {}
-    cliente["CLIENTE_COM_FOTO"] = get_cliente_com_foto(id)
-    cliente["SALDO_VC"] = get_saldo_vc(id)
-    cliente["MEDALHAS_CLIENTE"] = get_medalhas_cliente(id)
-    cliente["PTS_PROX_NIVEL"] = get_info_pedra_cliente(id)
-    cliente["INFO_PEDRA"] = get_info_cliente_new(id)
-    return cliente
+    dados_cliente = {}
+    dados_cliente["CLIENTE_COM_FOTO"] = get_cliente_com_foto(id)
+    dados_cliente["SALDO_VC"] = get_saldo_vc(id)
+    dados_cliente["MEDALHAS_CLIENTE"] = get_medalhas_cliente(id)
+    dados_cliente["PTS_PROX_NIVEL"] = get_info_pedra_cliente(id)
+    dados_cliente["INFO_PEDRA"] = get_info_cliente_new(id)
+    return dados_cliente
   end
 
 end
 
-
-cliente = {}
 #c = s.sap_get('pvmovel/clientes/1020010')
 #d = s.sap("ZRFC_GET_CLIENTECOMFOTO", {:zparam => "1020010", :tipo => '0'}.to_json)
 #d = s.sap("ZGET_SALDO_VC", {:i_cliente => "%010d" % 1020010}.to_json)
@@ -158,7 +182,11 @@ cliente = {}
 #p JSON.parse(SapService.get_cliente_json(2410071 ).to_json).to_s.gsub("=>", ":")
 #
 
-p SapService.get_cliente_com_foto(2410071)
-p SapService.get_cliente_comunicacao(2410071)
+#p SapService.get_cliente_com_foto(2410071)
+#p SapService.get_cliente_com_foto(2410071)
+#p SapService.get_cliente_comunicacao(1020010)
+#p SapService.get_cliente_neurotech(1020010)
+#SapService.get_cliente_idf(1020010)
+
 
 
