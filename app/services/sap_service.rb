@@ -44,21 +44,15 @@ class SapService
       raise "Não houve resultados." if result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].nil?
 
       titular = result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].first
-      cliente["TITULAR"] = titular
 
-      ["ATRASADO_CLI", "ATRASADO_DEP", "ATRASADO_AVA", "ATRASADO_DIAS", "MAIOR_ATRASO"].each do |k|
-        cliente[k] = result["ZRFC_GET_CLIENTECOMFOTO"][k]
-      end
       # e bloqueios???
-      ["LIMCRED", "NIVELCRED", "STRAS", "ORT02", "LAND1", "LZONE", "REGIO", "PSTLZ", "SALDODISP",
-       "SALDO", "HISTORICO", "KATR6", "AVISTA", "APRAZO", "LOGRADOURO", "NUMERO", "COMPLEMENTO",
-       "COMPLEMENTO_2", "PEDRA", "PREMIO_DISP", "PREMIO", "BONUS_VALIDADE", "BONUS_EXPIRANDO"].each do |k|
+      ["LIMCRED", "SALDODISP", "SALDO", "HISTORICO", "APRAZO", "PEDRA", "PREMIO_DISP", "BONUS_VALIDADE", "BONUS_EXPIRANDO", "NAME1", "STCD1", "STCD2", "STCD3", "STKZN", "TITULAR", "DATLT"].each do |k|
         cliente[k] = titular[k]
       end
 
       # Foto do titular (PJ dependente)
       if true
-        ["OBJ_ATU", "OBJ_IDE", "OBJ_SIG"].each do |img|
+        ["OBJ_ATU", "OBJ_IDE"].each do |img|
           next unless result["ZRFC_GET_CLIENTECOMFOTO"].has_key?(img)
           foto = ''
           result["ZRFC_GET_CLIENTECOMFOTO"][img].each do |parte|
@@ -68,7 +62,7 @@ class SapService
         end
       end
     end
-    return cliente
+    return cliente.sort.to_h
   end
 
   def self.get_saldo_vc(id)
