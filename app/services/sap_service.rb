@@ -30,7 +30,8 @@ class SapService
   end
 
   def self.sap(resource, data = {}.to_json)
-    RestClient.post "http://#{ENV["AUTH"]}@#{ENV["SAP_URL"]}" + resource, data, headers = {"charset" => "windows-1252"}
+    response =  RestClient.post "http://#{ENV["AUTH"]}@#{ENV["SAP_URL"]}" + resource, data, headers = {"charset" => "windows-1252"}
+    return JSON.parse(response.body)
   end
 
   def self.get_client_with_photo(id)
@@ -39,8 +40,7 @@ class SapService
         :tipo => '0'
     }.to_json
     cliente = {}
-    sap("ZRFC_GET_CLIENTECOMFOTO", data).tap do |response|
-      result = JSON.parse(response.body)
+    sap("ZRFC_GET_CLIENTECOMFOTO", data).tap do |result|
       raise "Não houve resultados." if result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].nil?
 
       titular = result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].first
@@ -70,8 +70,7 @@ class SapService
         :i_cliente => "%010d" % id
     }.to_json
     cliente = {}
-    sap("ZGET_SALDO_VC", data).tap do |response|
-      result = JSON.parse(response.body)
+    sap("ZGET_SALDO_VC", data).tap do |result|
       cliente["SALDO_VC"] = result["ZGET_SALDO_VC"]["E_SALDO"]
     end
     return cliente
@@ -83,8 +82,7 @@ class SapService
         :i_ano => Time.now.strftime('%Y')
     }.to_json
     cliente = {}
-    sap("ZMED_CLIENTES", data).tap do |response|
-      result = JSON.parse(response.body)
+    sap("ZMED_CLIENTES", data).tap do |result|
       cliente["MEDALHAS"] = result["ZMED_CLIENTES"]["T_MED_CLIENTES"]
       cliente["MEDALHAS"].each do |medalha|
         medalha.each do |k, v|
@@ -98,8 +96,7 @@ class SapService
   def self.get_info_pedra_cliente(id)
     cliente = get_client_with_photo(id)
     info_pedra = nil
-    sap("ZNIVEL_CLIENTE").tap do |response|
-      result = JSON.parse(response.body)
+    sap("ZNIVEL_CLIENTE").tap do |result|
       cliente["PTS_PX_PEDRA"] = if ['DIAMANTE', 'DIAMANTE+', ''].include?(cliente["PEDRA"])
                                   info_pedra = 0
                                 else
@@ -117,8 +114,8 @@ class SapService
         :I_CODCLI => "%010d" % id,
     }.to_json
     dados_cliente = nil
-    sap("ZGETCLI_NIVEL01", data).tap do |response|
-      dados_cliente = JSON.parse(response.body)
+    sap("ZGETCLI_NIVEL01", data).tap do |result|
+      dados_cliente = result
     end
     return dados_cliente
   end
