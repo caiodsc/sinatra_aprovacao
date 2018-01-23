@@ -130,9 +130,14 @@ class SapService
     }.to_json
     dados_cliente = {}
     sap("ZNT_GET_SCORE", data).tap do |result|
-      dados_neurotech = result["ZNT_GET_SCORE"]
-      dados_cliente[""]
+      #dados_neurotech = result["ZNT_GET_SCORE"]
+      dados_neurotech = SerializeService.filter(["E_LIMITE_VENDEDOR","E_LIMITE_GERENCIA", "E_LIMITE_CADASTRO", "E_SCORE"], result["ZNT_GET_SCORE"])
+      #p dados_neurotech
+      get_cliente_idf(id).tap do |result|
+        dados_cliente = dados_neurotech.merge(result)
+      end
     end
+    return dados_cliente
   end
 
   def self.get_cliente_idf(id)
@@ -185,8 +190,8 @@ end
 #p SapService.get_cliente_com_foto(2410071)
 #p SapService.get_cliente_com_foto(2410071)
 #p SapService.get_cliente_comunicacao(1020010)
-#p SapService.get_cliente_neurotech(1020010)
-#SapService.get_cliente_idf(1020010)
+p SapService.get_cliente_neurotech(1020010)
+#p SapService.get_cliente_idf(1020010)
 
 
 
