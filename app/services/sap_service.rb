@@ -10,17 +10,7 @@ Dotenv.load('../../config/variables.env.development')
 class SapService
 
   def initialize
-    # Resources
-    #Dotenv.load('./config/variables.env.development')
-    #ENV["API_URL"] = "http://180.200.1.231:4567/"
-    #ENV["AUTH"] = "bemolPVM pvm2012"
-    @bancohoras = 'ZHR_CONSBANCOHORAS_INTRANET'
-    @certificado = ''
-    @contracheque = ''
-    @descontos = 'Z_GET_DESC_INFO14'
-    @avaliacaofuncional = 'ZHR_CONSAVALFUNC2_INTRANET'
-    @emailmatricula = 'ZBOT_EMAIL_MATRICULA'
-    @espelhocrediario = 'ZGET_ESPELHOCREDIARIO'
+
   end
 
   def server_get(resource)
@@ -32,7 +22,7 @@ class SapService
   end
 
   def self.sap(resource, data = {}.to_json)
-    response =  RestClient.post "http://#{ENV["AUTH"]}@#{ENV["SAP_URL"]}" + resource, data #, headers = {"charset" => "windows-1252"}
+    response =  RestClient.post "http://#{ENV["AUTH"]}@#{ENV["SAP_IP_INTERNO_TESTE"]}" + resource, data #, headers = {"charset" => "windows-1252"}
     return JSON.parse(response.body)
   end
 
@@ -44,23 +34,21 @@ class SapService
     dados_cliente = {}
     sap("ZRFC_GET_CLIENTECOMFOTO", data).tap do |result|
       raise "Não houve resultados." if result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].nil?
-
       titular = result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].first
       dados_cliente = SerializeService.filter(["LIMCRED", "SALDODISP", "SALDO", "HISTORICO", "APRAZO", "PEDRA", "PREMIO_DISP", "BONUS_VALIDADE", "BONUS_EXPIRANDO", "NAME1", "STCD1", "STCD2", "STCD3", "STKZN", "TITULAR", "DATLT", "OBJ_ATU", "OBJ_IDE"], titular)
-      p dados_cliente
-      # Foto do titular (PJ dependente)
-
-        ["OBJ_ATU", "OBJ_IDE"].each do |img|
-          next unless result["ZRFC_GET_CLIENTECOMFOTO"].has_key?(img)
+      ["OBJ_ATU", "OBJ_IDE"].each do |img|
+        if result["ZRFC_GET_CLIENTECOMFOTO"].has_key?(img)
           foto = 'data:image/png;base64, '
           result["ZRFC_GET_CLIENTECOMFOTO"][img].each do |parte|
             foto << parte["LINE"]
           end
           dados_cliente[img] = foto
+        else
+          dados_cliente[img] = "images/default.png"
         end
-
+      end
     end
-    return dados_cliente.sort.to_h
+    return dados_cliente#.sort.to_h
   end
 
   def self.get_saldo_vc(id)
@@ -89,22 +77,6 @@ class SapService
       end
     end
     return dados_cliente
-  end
-
-  def self.get_info_pedra_cliente(id)
-    dados_cliente = get_cliente_com_foto(id)
-    info_pedra = nil
-    sap("ZNIVEL_CLIENTE").tap do |result|
-      dados_cliente["PTS_PX_PEDRA"] = if ['DIAMANTE', 'DIAMANTE+', ''].include?(dados_cliente["PEDRA"])
-                                  info_pedra = 0
-                                else
-                                  pedra = result["ZNIVEL_CLIENTE"]["T_NIVEL_CLI"]
-                                  i_pedra = pedra.index {|p| p["DESCRICAO_NIVEL"] == dados_cliente["PEDRA"]}
-                                  min_pts = pedra[i_pedra+1]["PONTOS_MINIMOS"]
-                                  info_pedra = [min_pts.to_i - dados_cliente["HISTORICO"].to_i ,0].max
-                                end
-    end
-    return info_pedra
   end
 
   def self.get_cliente_comunicacao(id)
@@ -147,11 +119,11 @@ class SapService
     return dados_cliente
   end
 
-  def self.get_info_cliente_new(id)
+  def self.get_info_pedra_cliente(id)
     data = {
         :I_CODCLI => "%010d" % id,
     }.to_json
-    dados_cliente = nil
+    dados_cliente = {}
     sap("ZGETCLI_NIVEL01", data).tap do |result|
       dados_cliente = result
     end
@@ -188,7 +160,8 @@ end
 #p SapService.get_cliente_comunicacao(1020010)
 #p SapService.get_cliente_neurotech(1020010)
 #p SapService.get_cliente_idf(1020010)
-SapService.get_cliente_com_foto(1020010)
+p SapService.get_info_cliente_new(1020010)
+p SapService.get_info_pedra_cliente(1020010)
 
 
 

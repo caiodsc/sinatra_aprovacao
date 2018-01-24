@@ -159,3 +159,21 @@ cliente = {}
 p SapService.get_client_with_photo(2410071)
 
 
+def self.get_info_pedra_cliente_old(id)
+  dados_cliente = get_cliente_com_foto(id)
+  info_pedra = nil
+  sap("ZNIVEL_CLIENTE").tap do |result|
+    dados_cliente["PTS_PX_PEDRA"] = if ['DIAMANTE', 'DIAMANTE+', ''].include?(dados_cliente["PEDRA"])
+                                      info_pedra = 0
+                                    else
+                                      pedra = result["ZNIVEL_CLIENTE"]["T_NIVEL_CLI"]
+                                      i_pedra = pedra.index {|p| p["DESCRICAO_NIVEL"] == dados_cliente["PEDRA"]}
+                                      min_pts = pedra[i_pedra+1]["PONTOS_MINIMOS"]
+                                      info_pedra = [min_pts.to_i - dados_cliente["HISTORICO"].to_i ,0].max
+                                    end
+  end
+  return info_pedra
+end
+
+
+
