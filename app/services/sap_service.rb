@@ -22,11 +22,20 @@ class SapService
   end
 
   def self.sap(resource, data = {}.to_json)
-    response =  RestClient.post "http://#{ENV["AUTH"]}@#{ENV["SAP_IP_INTERNO_TESTE"]}" + resource, data #, headers = {"charset" => "windows-1252"}
+    safe_response = {}
+    begin
+    RestClient.post("http://#{ENV["AUTH"]}@#{ENV["SAP_IP_INTERNO_TESTE"]}" + resource, data).tap do |response|#, headers = {"charset" => "windows-1252"}
     safe_response = {
-        "status" => response.code,
-        "data" => JSON.parse(response.body)
+        "STATUS" => response.code,
+        "DATA" => JSON.parse(response.body)
     }
+    end
+    rescue => e
+      safe_response = safe_response = {
+          "STATUS" => e.response.code,
+          "DATA" => JSON.parse(e.response.body)
+      }
+    end
     return safe_response
   end
 
@@ -151,14 +160,10 @@ class SapService
         :cliente => "%010d" % id
     }.to_json
     dados_cliente = {}
-    begin
-      sap("Z_GET_CONTRATO_04", {:cliente => "%010d" % id}.to_json).tap do |result|
-        p result
-        #p result["data"]["Z_GET_CONTRATO_04"]["T_CONTRATO"].first
-        #p dados_cliente = SerializeService.ajusta_contrato(result["Z_GET_CONTRATO_04"]["T_CONTRATO"].first)
-      end
-    rescue RestClient::UnprocessableEntity => e
-        return JSON.parse(e.response.body)
+    sap("Z_GET_CONTRATO_04", {:cliente => "%010d" % id}.to_json).tap do |result|
+      p result
+      #p result["data"]["Z_GET_CONTRATO_04"]["T_CONTRATO"].first
+      #p dados_cliente = SerializeService.ajusta_contrato(result["Z_GET_CONTRATO_04"]["T_CONTRATO"].first)
     end
     return dados_cliente
   end
@@ -197,7 +202,8 @@ end
 
 #p SapService.get_contratos_cliente(2410071)
 #p SapService.get_contratos_dependente(2410071)
-p SapService.get_contratos_dependente(1239220)
+SapService.get_contratos_dependente(1239220)
 
 
 
+#SapService.get_contratos_dependente(2410071)
