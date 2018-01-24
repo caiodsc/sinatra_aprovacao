@@ -34,6 +34,49 @@ class SerializeService
     end
   end
 
+  def self.ajusta_contrato(contrato)
+
+    hoje_i = Time.now.strftime('%Y%m%d').to_i
+    novo_contrato = filter(["DATA_COMPRA", "CONCEITO", "STATUS", "CONTRATO", "VENCIMENTO"], contrato)
+
+    novo_contrato["VALOR"] = contrato["MONTANTE"]
+    novo_contrato["TEXTO"] = case novo_contrato["STATUS"]
+                  when 'P'
+                    'Pendente'
+                  when 'R'
+                    'Repactuação'
+                  when 'C'
+                    'Cancelado'
+                  when 'L'
+                    'Liquidado'
+                  when 'A'
+                    if contrato["TITULO_PROTESTADO"] == 'X'
+                      'Título em poder do cartório'
+                    elsif contrato["SPC"] == 'T'
+                      'Tutela antecipada'
+                    elsif contrato["PCI"] == 'X'
+                      'Em PCI'
+                    elsif contrato["VENCIMENTO"].to_i < hoje_i.to_i
+                      'Em atraso'
+                    else
+                      'Em dia'
+                    end
+                end
+
+    novo_contrato["CONCEITO_TEXTO"] = case novo_contrato["CONCEITO"].to_i
+                           when 0
+                             'Ótimo'
+                           when 1
+                             'Bom'
+                           when 2
+                             'Regular'
+                           else
+                             'Péssimo'
+                         end
+
+    return novo_contrato
+  end
+
   def self.filter(wanted_keys, data)
     filtered_hash = {}
     wanted_keys.each { |key| filtered_hash[key] = data[key] || "" }

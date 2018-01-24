@@ -23,7 +23,11 @@ class SapService
 
   def self.sap(resource, data = {}.to_json)
     response =  RestClient.post "http://#{ENV["AUTH"]}@#{ENV["SAP_IP_INTERNO_TESTE"]}" + resource, data #, headers = {"charset" => "windows-1252"}
-    return JSON.parse(response.body)
+    safe_response = {
+        "status" => response.code,
+        "data" => JSON.parse(response.body)
+    }
+    return safe_response
   end
 
   def self.get_cliente_com_foto(id)
@@ -92,6 +96,17 @@ class SapService
     return dados_cliente
   end
 
+  def self.get_info_pedra_cliente(id)
+    data = {
+        :I_CODCLI => "%010d" % id,
+    }.to_json
+    dados_cliente = {}
+    sap("ZGETCLI_NIVEL01", data).tap do |result|
+      dados_cliente = SerializeService.filter(["E_NIVEL_PROX", "E_QTD_PROX_NIVEL"], result["ZGETCLI_NIVEL01"])
+    end
+    return dados_cliente
+  end
+
   def self.get_cliente_neurotech(id)
     data = {
         :I_CLIENTE => "%010d" % id
@@ -119,16 +134,35 @@ class SapService
     return dados_cliente
   end
 
-  def self.get_info_pedra_cliente(id)
+  def self.get_contratos_cliente(id)
     data = {
-        :I_CODCLI => "%010d" % id,
+        :cliente => "%010d" % id
     }.to_json
     dados_cliente = {}
-    sap("ZGETCLI_NIVEL01", data).tap do |result|
-      dados_cliente = result
+    sap("Z_GET_CONTRATO_02N", data).tap do |result|
+      #p result["Z_GET_CONTRATO_02N"]["T_CONTRATO"].first
+      dados_cliente = SerializeService.ajusta_contrato(result["Z_GET_CONTRATO_02N"]["T_CONTRATO"].first)
     end
     return dados_cliente
   end
+
+  def self.get_contratos_dependente(id)
+    data = {
+        :cliente => "%010d" % id
+    }.to_json
+    dados_cliente = {}
+    begin
+      sap("Z_GET_CONTRATO_04", {:cliente => "%010d" % id}.to_json).tap do |result|
+        p result
+        #p result["data"]["Z_GET_CONTRATO_04"]["T_CONTRATO"].first
+        #p dados_cliente = SerializeService.ajusta_contrato(result["Z_GET_CONTRATO_04"]["T_CONTRATO"].first)
+      end
+    rescue RestClient::UnprocessableEntity => e
+        return JSON.parse(e.response.body)
+    end
+    return dados_cliente
+  end
+
 
   def self.get_cliente_json(id)
     dados_cliente = {}
@@ -160,8 +194,10 @@ end
 #p SapService.get_cliente_comunicacao(1020010)
 #p SapService.get_cliente_neurotech(1020010)
 #p SapService.get_cliente_idf(1020010)
-p SapService.get_info_cliente_new(1020010)
-p SapService.get_info_pedra_cliente(1020010)
+
+#p SapService.get_contratos_cliente(2410071)
+#p SapService.get_contratos_dependente(2410071)
+p SapService.get_contratos_dependente(1239220)
 
 
 
