@@ -46,14 +46,10 @@ class SapService
       raise "Não houve resultados." if result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].nil?
 
       titular = result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].first
-
-      # e bloqueios???
-      ["LIMCRED", "SALDODISP", "SALDO", "HISTORICO", "APRAZO", "PEDRA", "PREMIO_DISP", "BONUS_VALIDADE", "BONUS_EXPIRANDO", "NAME1", "STCD1", "STCD2", "STCD3", "STKZN", "TITULAR", "DATLT"].each do |k|
-        dados_cliente[k] = titular[k]
-      end
-
+      dados_cliente = SerializeService.filter(["LIMCRED", "SALDODISP", "SALDO", "HISTORICO", "APRAZO", "PEDRA", "PREMIO_DISP", "BONUS_VALIDADE", "BONUS_EXPIRANDO", "NAME1", "STCD1", "STCD2", "STCD3", "STKZN", "TITULAR", "DATLT", "OBJ_ATU", "OBJ_IDE"], titular)
+      p dados_cliente
       # Foto do titular (PJ dependente)
-      if true
+
         ["OBJ_ATU", "OBJ_IDE"].each do |img|
           next unless result["ZRFC_GET_CLIENTECOMFOTO"].has_key?(img)
           foto = 'data:image/png;base64, '
@@ -62,7 +58,7 @@ class SapService
           end
           dados_cliente[img] = foto
         end
-      end
+
     end
     return dados_cliente.sort.to_h
   end
@@ -190,8 +186,9 @@ end
 #p SapService.get_cliente_com_foto(2410071)
 #p SapService.get_cliente_com_foto(2410071)
 #p SapService.get_cliente_comunicacao(1020010)
-p SapService.get_cliente_neurotech(1020010)
+#p SapService.get_cliente_neurotech(1020010)
 #p SapService.get_cliente_idf(1020010)
+SapService.get_cliente_com_foto(1020010)
 
 
 

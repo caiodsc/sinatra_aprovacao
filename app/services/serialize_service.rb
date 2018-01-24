@@ -35,8 +35,12 @@ class SerializeService
   end
 
   def self.filter(wanted_keys, data)
-    data.select { |key,_| wanted_keys.include? key }
+    filtered_hash = {}
+    wanted_keys.each { |key| filtered_hash[key] = data[key] || "" }
+    return filtered_hash
   end
 
 
 end
+
+#data.select { |key, _| wanted_keys.include? key }
