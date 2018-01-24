@@ -34,6 +34,14 @@ class SerializeService
     end
   end
 
+  def self.serialize_foto(sap_foto)
+    foto = 'data:image/png;base64, '
+    sap_foto.each do |parte|
+      foto << parte["LINE"]
+    end
+    return foto
+  end
+
   def self.ajusta_contrato(contrato)
 
     hoje_i = Time.now.strftime('%Y%m%d').to_i

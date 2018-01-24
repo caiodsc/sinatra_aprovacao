@@ -25,16 +25,10 @@ class SapService
     safe_response = {}
     begin
     RestClient.post("http://#{ENV["AUTH"]}@#{ENV["SAP_IP_INTERNO_TESTE"]}" + resource, data).tap do |response|#, headers = {"charset" => "windows-1252"}
-    safe_response = {
-        "STATUS" => response.code,
-        "DATA" => JSON.parse(response.body)
-    }
+    safe_response = JSON.parse(response.body).merge({"STATUS"=>response.code})
     end
     rescue => e
-      safe_response = safe_response = {
-          "STATUS" => e.response.code,
-          "DATA" => JSON.parse(e.response.body)
-      }
+      safe_response = JSON.parse(e.response.body).merge({"STATUS"=>e.response.code})
     end
     return safe_response
   end
@@ -47,15 +41,11 @@ class SapService
     dados_cliente = {}
     sap("ZRFC_GET_CLIENTECOMFOTO", data).tap do |result|
       raise "Não houve resultados." if result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].nil?
-      titular = result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].first
-      dados_cliente = SerializeService.filter(["LIMCRED", "SALDODISP", "SALDO", "HISTORICO", "APRAZO", "PEDRA", "PREMIO_DISP", "BONUS_VALIDADE", "BONUS_EXPIRANDO", "NAME1", "STCD1", "STCD2", "STCD3", "STKZN", "TITULAR", "DATLT", "OBJ_ATU", "OBJ_IDE"], titular)
+      dados_cliente["STATUS"] = result["STATUS"]
+      dados_cliente = dados_cliente.merge(SerializeService.filter(["LIMCRED", "SALDODISP", "SALDO", "HISTORICO", "APRAZO", "PEDRA", "PREMIO_DISP", "BONUS_VALIDADE", "BONUS_EXPIRANDO", "NAME1", "STCD1", "STCD2", "STCD3", "STKZN", "TITULAR", "DATLT", "OBJ_ATU", "OBJ_IDE"], result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].first))
       ["OBJ_ATU", "OBJ_IDE"].each do |img|
         if result["ZRFC_GET_CLIENTECOMFOTO"].has_key?(img)
-          foto = 'data:image/png;base64, '
-          result["ZRFC_GET_CLIENTECOMFOTO"][img].each do |parte|
-            foto << parte["LINE"]
-          end
-          dados_cliente[img] = foto
+          dados_cliente[img] = SerializeService.serialize_foto(result["ZRFC_GET_CLIENTECOMFOTO"][img])
         else
           dados_cliente[img] = "images/default.png"
         end
@@ -70,6 +60,7 @@ class SapService
     }.to_json
     dados_cliente = {}
     sap("ZGET_SALDO_VC", data).tap do |result|
+      dados_cliente["STATUS"] = result["STATUS"]
       dados_cliente["SALDO_VC"] = result["ZGET_SALDO_VC"]["E_SALDO"]
     end
     return dados_cliente
@@ -82,6 +73,7 @@ class SapService
     }.to_json
     dados_cliente = {}
     sap("ZMED_CLIENTES", data).tap do |result|
+      dados_cliente["STATUS"] = result["STATUS"]
       dados_cliente["MEDALHAS"] = result["ZMED_CLIENTES"]["T_MED_CLIENTES"]
       dados_cliente["MEDALHAS"].each do |medalha|
         medalha.each do |k, v|
@@ -99,6 +91,7 @@ class SapService
     dados_cliente = {}
     sap("ZRFC_GETCLIENTE_COMUNICACAO", data).tap do |result|
       cliente_comunicacao = result["ZRFC_GETCLIENTE_COMUNICACAO"]
+      dados_cliente["STATUS"] = result["STATUS"]
       dados_cliente["EMAIL"] = SerializeService.serialize_email(cliente_comunicacao["EMAILS"])
       dados_cliente["TELEFONES"] = SerializeService.serialize_telefones(cliente_comunicacao["TELEFONES"])
     end
@@ -111,7 +104,8 @@ class SapService
     }.to_json
     dados_cliente = {}
     sap("ZGETCLI_NIVEL01", data).tap do |result|
-      dados_cliente = SerializeService.filter(["E_NIVEL_PROX", "E_QTD_PROX_NIVEL"], result["ZGETCLI_NIVEL01"])
+      dados_cliente["STATUS"] = result["STATUS"]
+      dados_cliente = dados_cliente.merge(SerializeService.filter(["E_NIVEL_PROX", "E_QTD_PROX_NIVEL"], result["ZGETCLI_NIVEL01"]))
     end
     return dados_cliente
   end
@@ -122,11 +116,10 @@ class SapService
     }.to_json
     dados_cliente = {}
     sap("ZNT_GET_SCORE", data).tap do |result|
-      #dados_neurotech = result["ZNT_GET_SCORE"]
+      dados_cliente["STATUS"] = result["STATUS"]
       dados_neurotech = SerializeService.filter(["E_LIMITE_VENDEDOR","E_LIMITE_GERENCIA", "E_LIMITE_CADASTRO", "E_SCORE"], result["ZNT_GET_SCORE"])
-      #p dados_neurotech
       get_cliente_idf(id).tap do |result|
-        dados_cliente = dados_neurotech.merge(result)
+        dados_cliente = dados_cliente.merge(dados_neurotech.merge({"CLIENTE_IDF" => result}))
       end
     end
     return dados_cliente
@@ -138,32 +131,28 @@ class SapService
     }.to_json
     dados_cliente = {}
     sap("ZRFC_IDFCALCULOVENDAPRAZO", data).tap do |result|
+      dados_cliente["STATUS"] = result["STATUS"]
       dados_cliente["TOTAL_PONTUACAO"] = result["ZRFC_IDFCALCULOVENDAPRAZO"]["TOTAL_PONTUACAO"]
     end
     return dados_cliente
   end
 
   def self.get_contratos_cliente(id)
-    data = {
-        :cliente => "%010d" % id
-    }.to_json
+    data = { :cliente => "%010d" % id }.to_json
     dados_cliente = {}
     sap("Z_GET_CONTRATO_02N", data).tap do |result|
-      #p result["Z_GET_CONTRATO_02N"]["T_CONTRATO"].first
-      dados_cliente = SerializeService.ajusta_contrato(result["Z_GET_CONTRATO_02N"]["T_CONTRATO"].first)
+      dados_cliente["STATUS"] = result["STATUS"]
+      dados_cliente = dados_cliente.merge(SerializeService.ajusta_contrato(result["Z_GET_CONTRATO_02N"]["T_CONTRATO"].first))
     end
     return dados_cliente
   end
 
   def self.get_contratos_dependente(id)
-    data = {
-        :cliente => "%010d" % id
-    }.to_json
+    data = { :cliente => "%010d" % id }.to_json
     dados_cliente = {}
-    sap("Z_GET_CONTRATO_04", {:cliente => "%010d" % id}.to_json).tap do |result|
-      p result
-      #p result["data"]["Z_GET_CONTRATO_04"]["T_CONTRATO"].first
-      #p dados_cliente = SerializeService.ajusta_contrato(result["Z_GET_CONTRATO_04"]["T_CONTRATO"].first)
+    sap("Z_GET_CONTRATO_04", data).tap do |result|
+      dados_cliente["STATUS"] = result["STATUS"]
+      dados_cliente = dados_cliente.merge(SerializeService.ajusta_contrato(result["Z_GET_CONTRATO_04"]["T_CONTRATO"].first))
     end
     return dados_cliente
   end
@@ -198,11 +187,11 @@ end
 #p SapService.get_cliente_com_foto(2410071)
 #p SapService.get_cliente_comunicacao(1020010)
 #p SapService.get_cliente_neurotech(1020010)
-#p SapService.get_cliente_idf(1020010)
+p SapService.get_contratos_dependente(1239220)
 
 #p SapService.get_contratos_cliente(2410071)
 #p SapService.get_contratos_dependente(2410071)
-SapService.get_contratos_dependente(1239220)
+#SapService.get_contratos_dependente(1239220)
 
 
 
