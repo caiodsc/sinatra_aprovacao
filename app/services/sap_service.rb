@@ -2,15 +2,18 @@ require 'rest-client'
 require 'json'
 require 'dotenv'
 require 'awesome_print'
+require 'date'
+require 'active_support/time'
 require_relative 'serialize_service'
 
 Dotenv.load('../../config/variables.env.development')
 
-
 class SapService
 
-  def initialize
+  @hoje = Time.now
 
+  def initialize
+    super
   end
 
   def server_get(resource)
@@ -34,10 +37,7 @@ class SapService
   end
 
   def self.get_cliente_com_foto(id)
-    data = {
-        :zparam => id,
-        :tipo => '0'
-    }.to_json
+    data = { :zparam => id, :tipo => '0' }.to_json
     dados_cliente = {}
     sap("ZRFC_GET_CLIENTECOMFOTO", data).tap do |result|
       raise "Não houve resultados." if result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].nil?
@@ -55,9 +55,7 @@ class SapService
   end
 
   def self.get_saldo_vc(id)
-    data = {
-        :i_cliente => "%010d" % id
-    }.to_json
+    data = { :i_cliente => "%010d" % id }.to_json
     dados_cliente = {}
     sap("ZGET_SALDO_VC", data).tap do |result|
       dados_cliente["STATUS"] = result["STATUS"]
@@ -67,10 +65,7 @@ class SapService
   end
 
   def self.get_medalhas_cliente(id)
-    data = {
-        :i_kunnr => "%010d" % id,
-        :i_ano => Time.now.strftime('%Y')
-    }.to_json
+    data = { :i_kunnr => "%010d" % id, :i_ano => Time.now.strftime('%Y') }.to_json
     dados_cliente = {}
     sap("ZMED_CLIENTES", data).tap do |result|
       dados_cliente["STATUS"] = result["STATUS"]
@@ -85,9 +80,7 @@ class SapService
   end
 
   def self.get_cliente_comunicacao(id)
-    data = {
-        :I_CLIENTE => "%010d" % id
-    }.to_json
+    data = { :I_CLIENTE => "%010d" % id }.to_json
     dados_cliente = {}
     sap("ZRFC_GETCLIENTE_COMUNICACAO", data).tap do |result|
       cliente_comunicacao = result["ZRFC_GETCLIENTE_COMUNICACAO"]
@@ -99,9 +92,7 @@ class SapService
   end
 
   def self.get_info_pedra_cliente(id)
-    data = {
-        :I_CODCLI => "%010d" % id,
-    }.to_json
+    data = { :I_CODCLI => "%010d" % id }.to_json
     dados_cliente = {}
     sap("ZGETCLI_NIVEL01", data).tap do |result|
       dados_cliente["STATUS"] = result["STATUS"]
@@ -157,6 +148,36 @@ class SapService
     return dados_cliente
   end
 
+  def self.get_contratos_avalista(id)
+    data = { :avalista => "%010d" % id }.to_json
+    dados_cliente = {}
+    sap("Z_GET_CONTRATO_03", data).tap do |result|
+      dados_cliente["STATUS"] = result["STATUS"]
+      dados_cliente = dados_cliente.merge(SerializeService.ajusta_contrato(result["Z_GET_CONTRATO_03"]["T_CONTRATO"].first))
+    end
+    return dados_cliente
+  end
+
+  def self.get_contratos_liquidados(id)
+    data = { :cliente => "%010d" % id }.to_json
+    dados_cliente = {}
+    sap("Z_GET_CONTRATO_02N", data).tap do |result|
+      dados_cliente["STATUS"] = result["STATUS"]
+      dados_cliente = dados_cliente.merge(SerializeService.ajusta_contrato(result["Z_GET_CONTRATO_02N"]["T_CONTRATO"].first))
+    end
+    return dados_cliente
+  end
+
+  def self.get_cliente_recebimentos(id)
+    data = { :I_CLIENTE => "%010d" % id }.to_json
+    dados_cliente = {}
+    sap("Z_GET_RECEBIMENTO", data).tap do |result|
+      dados_cliente["STATUS"] = result["STATUS"]
+      dados_cliente["RECEBIMENTOS"] = result["Z_GET_RECEBIMENTO"]["T_RECFORMAPAG"]
+      dados_cliente["RECEBIMENTOS"].delete_if { |r| Date.parse(r["DT_RECEBIMENTO2"]).to_time < (60.days.ago)}
+    end
+    return dados_cliente
+  end
 
   def self.get_cliente_json(id)
     dados_cliente = {}
@@ -170,6 +191,9 @@ class SapService
 
 end
 
+
+
+
 #c = s.sap_get('pvmovel/clientes/1020010')
 #d = s.sap("ZRFC_GET_CLIENTECOMFOTO", {:zparam => "1020010", :tipo => '0'}.to_json)
 #d = s.sap("ZGET_SALDO_VC", {:i_cliente => "%010d" % 1020010}.to_json)
@@ -179,20 +203,14 @@ end
 #r = SapService.get_cliente_com_foto
 #p r
 #p SapService.get_info_pedra_cliente(r)
-#
 #p JSON.parse(SapService.get_cliente_json(2410071 ).to_json).to_s.gsub("=>", ":")
-#
-
 #p SapService.get_cliente_com_foto(2410071)
 #p SapService.get_cliente_com_foto(2410071)
 #p SapService.get_cliente_comunicacao(1020010)
 #p SapService.get_cliente_neurotech(1020010)
-p SapService.get_contratos_dependente(1239220)
-
+#p SapService.get_contratos_dependente(1239220)
 #p SapService.get_contratos_cliente(2410071)
 #p SapService.get_contratos_dependente(2410071)
 #SapService.get_contratos_dependente(1239220)
-
-
-
 #SapService.get_contratos_dependente(2410071)
+p SapService.get_cliente_recebimentos(2410071)
