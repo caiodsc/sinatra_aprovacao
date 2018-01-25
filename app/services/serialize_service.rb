@@ -85,12 +85,49 @@ class SerializeService
     return novo_contrato
   end
 
+  def self.ajusta_prestacoes(prestacoes)
+    prestacoes_ajustadas = []
+    prestacoes.each do |prest|
+      nova_prest = filter(["CONTRATO", "VENCIMENTO", "DIF_DIAS", "VALOR_PRESTACAO"], prest)
+      nova_prest["DIF_DIAS"] = [nova_prest["DIF_DIAS"].to_i, 0].max
+      nova_prest["VALOR_ATUAL"] = prest["VALOR_PRESTACAO"] + prest["VALOR_JUROS"] - prest["VALOR_DESCONTO"]
+      prestacoes_ajustadas << nova_prest
+    end
+    return prestacoes_ajustadas.sort! {|a,b| a["VENCIMENTO"] <=> b["VENCIMENTO"]}
+  end
+
+  def self.get_comprometimento_from_prestacoes(dados)
+    comprometimento = {}
+    ["PRESTACOES", "PRESTACOES_AVA", "PRESTACOES_DEP"].each do |prest|
+      next unless dados.has_key?(prest)
+      dados[prest].each do |p|
+        yyyy_mm = p["VENCIMENTO"][0..5]
+        if comprometimento.has_key?(yyyy_mm)
+          comprometimento[yyyy_mm] += p["VALOR_PRESTACAO"]
+        else
+          comprometimento[yyyy_mm] = p["VALOR_PRESTACAO"]
+        end
+      end
+    end
+
+    unless comprometimento.empty?
+      dados["COMPROMETIMENTO"] = comprometimento.map { |k, v| {"ANO_MES" => k[0..3]+'/'+k[4..5], "SALDO_DEVEDOR" => v}}
+      dados["COMPROMETIMENTO"].sort! {|a,b| a["ANO_MES"] <=> b["ANO_MES"]}
+    end
+
+    return dados.delete_if {|k,v| v.nil?}
+
+  end
+
+  def self.map_keys(key_map, hash_object)
+    return hash_object.map {|k, v| [key_map[k] || k, v]}.to_h
+  end
+
   def self.filter(wanted_keys, data)
     filtered_hash = {}
     wanted_keys.each { |key| filtered_hash[key] = data[key] || "" }
     return filtered_hash
   end
-
 
 end
 

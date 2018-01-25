@@ -27,5 +27,5 @@ gem 'awesome_print'
 
 gem 'string_utf8'
 
-
+gem 'tux'
 gem 'faraday'

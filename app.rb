@@ -32,8 +32,9 @@ class App < Sinatra::Base
     redirect request.base_url + '/home'
   end
 
-  get '/client' do
-    info = SapService.get_cliente_json(2410071 )
+  get '/client/:id' do
+    p params[:id]
+    info = SapService.get_cliente_json(params[:id].to_i )
     client = Client.new(:info => info)
     if client.save
       [201, client.extend(ClientRepresenter).to_json]
