@@ -43,6 +43,7 @@ class SapService
       raise "Não houve resultados." if result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].nil?
       dados_cliente["RFC_STATUS"] = result["RFC_STATUS"]
       return dados_cliente if result["RFC_STATUS"] != 200
+      p result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].first
       dados_cliente = dados_cliente.merge(SerializeService.filter(["LIMCRED", "SALDODISP", "SALDO", "HISTORICO", "APRAZO", "PEDRA", "PREMIO_DISP", "BONUS_VALIDADE", "BONUS_EXPIRANDO", "NAME1", "STCD1", "STCD2", "STCD3", "STKZN", "TITULAR", "DATLT", "OBJ_ATU", "OBJ_IDE"], result["ZRFC_GET_CLIENTECOMFOTO"]["ZCUSTOMERCLI"].first))
       ["OBJ_ATU", "OBJ_IDE"].each do |img|
         if result["ZRFC_GET_CLIENTECOMFOTO"].has_key?(img)
@@ -64,6 +65,10 @@ class SapService
     end
     return dados_cliente
   end
+
+
+
+
   def self.get_medalhas_cliente(id)
     data = { :i_kunnr => "%010d" % id, :i_ano => Time.now.strftime('%Y') }.to_json
     dados_cliente = {}
@@ -79,6 +84,8 @@ class SapService
     end
     return dados_cliente
   end
+
+
   def self.get_cliente_comunicacao(id)
     data = { :I_CLIENTE => "%010d" % id }.to_json
     dados_cliente = {}
@@ -226,21 +233,21 @@ class SapService
     threads << Thread.new { dados_cliente["INFO_PRESTACOES"] = get_cliente_prestacoes(id) }
     threads << Thread.new { dados_cliente["INFO_INDENIZACAO"] = get_acordo_indenizacao(id) }
     threads.each { |thr| thr.join }
-    #dados_cliente["CLIENTE_COM_FOTO"] = get_cliente_com_foto(id)
-    #dados_cliente["SALDO_VC"] = get_saldo_vc(id)
-    #dados_cliente["MEDALHAS_CLIENTE"] = get_medalhas_cliente(id)
-    #dados_cliente["INFO_COMUNICACAO"] = get_cliente_comunicacao(id)
-    #dados_cliente["INFO_PEDRA"] = get_info_pedra_cliente(id)
-    #dados_cliente["INFO_NEUROTECH"] = get_cliente_neurotech(id)
-    #dados_cliente["INFO_IDF"] = get_cliente_idf(id)
-    #dados_cliente["INFO_CONTRATOS"] = {}
-    #dados_cliente["INFO_CONTRATOS"]["CONTRATOS_CLIENTE"] = get_contratos_cliente(id)
-    #dados_cliente["INFO_CONTRATOS"]["CONTRATOS_DEPENDENTE"] = get_contratos_dependente(id)
-    #dados_cliente["INFO_CONTRATOS"]["CONTRATOS_AVALISTA"] = get_contratos_avalista(id)
-    #dados_cliente["INFO_CONTRATOS"]["CONTRATOS_LIQUIDADOS"] = get_contratos_liquidados(id)
-    #dados_cliente["INFO_RECEBIMENTOS"] = get_cliente_recebimentos(id)
-    #dados_cliente["INFO_PRESTACOES"] = get_cliente_prestacoes(id)
-    #dados_cliente["INFO_INDENIZACAO"] = get_acordo_indenizacao(id)
+    # dados_cliente["CLIENTE_COM_FOTO"] = get_cliente_com_foto(id)
+    # dados_cliente["SALDO_VC"] = get_saldo_vc(id)
+    # dados_cliente["MEDALHAS_CLIENTE"] = get_medalhas_cliente(id)
+    # dados_cliente["INFO_COMUNICACAO"] = get_cliente_comunicacao(id)
+    # dados_cliente["INFO_PEDRA"] = get_info_pedra_cliente(id)
+    # dados_cliente["INFO_NEUROTECH"] = get_cliente_neurotech(id)
+    # dados_cliente["INFO_IDF"] = get_cliente_idf(id)
+    # dados_cliente["INFO_CONTRATOS"] = {}
+    # dados_cliente["INFO_CONTRATOS"]["CONTRATOS_CLIENTE"] = get_contratos_cliente(id)
+    # dados_cliente["INFO_CONTRATOS"]["CONTRATOS_DEPENDENTE"] = get_contratos_dependente(id)
+    # dados_cliente["INFO_CONTRATOS"]["CONTRATOS_AVALISTA"] = get_contratos_avalista(id)
+    # dados_cliente["INFO_CONTRATOS"]["CONTRATOS_LIQUIDADOS"] = get_contratos_liquidados(id)
+    # dados_cliente["INFO_RECEBIMENTOS"] = get_cliente_recebimentos(id)
+    # dados_cliente["INFO_PRESTACOES"] = get_cliente_prestacoes(id)
+    # dados_cliente["INFO_INDENIZACAO"] = get_acordo_indenizacao(id)
     return dados_cliente
   end
 
@@ -265,7 +272,7 @@ end
 #p SapService.get_contratos_dependente(2410071)
 #SapService.get_contratos_dependente(1239220)
 #SapService.get_contratos_dependente(2410071)
-#r = Time.now
-#p SapService.get_cliente_json(2410071).sort.to_h
-#s = Time.now
-#p (s-r)
+r = Time.now
+p SapService.get_info_pedra_cliente(2410071)
+s = Time.now
+p (s-r)

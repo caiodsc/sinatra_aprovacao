@@ -212,28 +212,30 @@
                 </tr>
                 </thead>
 
-                <tbody>
-                <tr class="font-m blue-text">
-                  <td>05/08/2017</td>
-                  <td class="text-center">R$ 155,32</td>
-                  <td class="right-align">Ótimo</td>
-                </tr>
-                <tr class="font-m blue-text">
-                  <td>29/07/2017</td>
-                  <td class="text-center">R$ 894,90</td>
-                  <td class="right-align">Ótimo</td>
-                </tr>
-                <tr class="font-m blue-text">
-                  <td>05/08/2017</td>
-                  <td class="text-center">R$ 199,20</td>
-                  <td class="right-align">Bom</td>
-                </tr>
-                <tr class="font-m blue-text">
-                  <td>29/07/2017</td>
-                  <td class="text-center">R$ 40,00</td>
-                  <td class="right-align">Bom</td>
-                </tr>
-                </tbody>
+
+                <div style="height:50px;" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="10"><tbody>
+                  <tr class="font-m blue-text">
+                    <td>05/08/2017</td>
+                    <td class="text-center">R$ 155,32</td>
+                    <td class="right-align">Ótimo</td>
+                  </tr>
+                  <tr class="font-m blue-text">
+                    <td>29/07/2017</td>
+                    <td class="text-center">R$ 894,90</td>
+                    <td class="right-align">Ótimo</td>
+                  </tr>
+                  <tr class="font-m blue-text">
+                    <td>05/08/2017</td>
+                    <td class="text-center">R$ 199,20</td>
+                    <td class="right-align">Bom</td>
+                  </tr>
+                  <tr class="font-m blue-text">
+                    <td>29/07/2017</td>
+                    <td class="text-center">R$ 40,00</td>
+                    <td class="right-align">Bom</td>
+                  </tr></tbody>
+                </div>
+
               </table>
             </div>
           </div>

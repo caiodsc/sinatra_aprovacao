@@ -33,8 +33,10 @@ class App < Sinatra::Base
   end
 
   get '/client/:id' do
-    p params[:id]
+    #p params[:id]
+    r = Time.now
     info = SapService.get_cliente_json(params[:id].to_i )
+    p Time.now - r
     client = Client.new(:info => info)
     if client.save
       [201, client.extend(ClientRepresenter).to_json]
